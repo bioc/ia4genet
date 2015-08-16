@@ -40,3 +40,17 @@ This is followed by a view of the [EMBL-EBI GWAS](https://www.ebi.ac.uk/gwas/) (
 study) catalog.  We conclude with an illustration of
 integrating population-level finding on DNA sequence variants with
 recent research results on epigenetic variation.
+
+# Reference builds of the human genome sequence
+
+The most recent build of the human genomic sequence
+is labeled GRCh38.  Using Bioconductor, we can be very concrete about what this
+is.
+
+```{r lkhg}
+library(BSgenome.Hsapiens.NCBI.GRCh38)
+class(Hsapiens)
+Hsapiens
+class(Hsapiens$"1")
+Hsapiens$"1"
+```
