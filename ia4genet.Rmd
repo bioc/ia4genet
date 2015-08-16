@@ -1,0 +1,42 @@
+---
+title: "Integrative annotation for human genetics: Approaches with Bioconductor"
+author: "Vincent J. Carey"
+date: "`r doc_date()`"
+abstract: >
+  The study of genetic variation among human individuals
+  engenders substantial archives of details on individual genomes.
+  Details of genetic variation are interpreted using evolving
+  resources assembled at various scales.  NCBI's dbSNP assembles
+  information on relatively small variants that occur with
+  some regularity in human populations.  The EMBL-EBI GWAS catalog
+  provides a curated view of replicated studies of genotype-phenotype
+  association.  This workflow reviews the use of Bioconductor packages
+  that help investigators interpret their own findings in studies
+  of human genetics.
+vignette: >
+  %\VignetteIndexEntry{Integrative annotation for human genetics: Approaches with Bioconductor}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+output: 
+  BiocStyle::html_document
+---
+
+# Background
+
+The table of contents of Vogel and Motulsky's [_Human Genetics: Problems and Approaches_](https://books.google.com/books?id=xuztCAAAQBAJ&lpg=PA6&dq=human%20genetics&pg=PR32#v=onepage&q=human%20genetics&f=false)
+is a worthy survey of concepts addressed in research on human
+genetics and genetic medicine.  The frontiers of knowledge in the field
+are shifting, and expectations are high.
+
+In this workflow, I aim to show how researchers can use R
+to interrogate important resources of use in human genetic
+epidemiology and medical genomics.  We'll begin with a
+brief treatment of "reference genome builds" for _Homo sapiens_,
+coupled with tools for obtaining and programming with gene models.
+We'll then look at approaches for working with
+the [NCBI dbSNP](http://www.ncbi.nlm.nih.gov/SNP/)
+catalog of small variants.
+This is followed by a view of the [EMBL-EBI GWAS](https://www.ebi.ac.uk/gwas/) (genome-wide association
+study) catalog.  We conclude with an illustration of
+integrating population-level finding on DNA sequence variants with
+recent research results on epigenetic variation.
