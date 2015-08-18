@@ -21,6 +21,14 @@ output:
   BiocStyle::html_document
 ---
 
+```{r setup,echo=FALSE,results="hide"}
+suppressPackageStartupMessages({
+library(gwascat)
+library(AnnotationHub)
+library(DT)
+})
+```
+
 # Background
 
 The table of contents of Vogel and Motulsky's [_Human Genetics: Problems and Approaches_](https://books.google.com/books?id=xuztCAAAQBAJ&lpg=PA6&dq=human%20genetics&pg=PR32#v=onepage&q=human%20genetics&f=false)
@@ -30,18 +38,96 @@ are shifting, and expectations are high.
 
 In this workflow, I aim to show how researchers can use R
 to interrogate important resources of use in human genetic
-epidemiology and medical genomics.  We'll begin with a
+epidemiology and medical genomics.  I show how to program with two
+genome-wide association study
+(GWAS) catalogs, 
+the [EMBL-EBI GWAS catalog](https://www.ebi.ac.uk/gwas/) 
+and the [NHLBI GRASP v2.0](http://iapps.nhlbi.nih.gov/GRASP/Overview.aspx).
+Aspects of findings reported in these studies are then
+integrated with new functional and structural annotation resources
+to aid in variant interpretation.
+An appendix provides
 brief treatment of "reference genome builds" for _Homo sapiens_,
-coupled with tools for obtaining and programming with gene models.
-We'll then look at approaches for working with
-the [NCBI dbSNP](http://www.ncbi.nlm.nih.gov/SNP/)
-catalog of small variants.
-This is followed by a view of the [EMBL-EBI GWAS](https://www.ebi.ac.uk/gwas/) (genome-wide association
-study) catalog.  We conclude with an illustration of
-integrating population-level finding on DNA sequence variants with
-recent research results on epigenetic variation.
+packages for querying contents of
+the [NCBI dbSNP](http://www.ncbi.nlm.nih.gov/SNP/),
+and tools for obtaining and programming with gene models.
 
-# Reference builds of the human genome sequence
+# The gwascat package for the EMBL-EBI GWAS catalog
+
+## Basic operations, fields, and interactive tabulation 
+
+The EMBL-EBI catalog is presented using GRCh38 coordinates.
+```{r lkg}
+library(gwascat)
+data(ebicat38)
+ebicat38
+```
+
+While there are `r length(ebicat38)` records, the number of unique loci is
+```{r lku}
+length(unique(ebicat38$SNPS))
+```
+
+A full view of the metadata about each study result is available
+with the commands
+```{r eval=FALSE}
+library(DT)
+datatable(as.data.frame(mcols(ebicat38)), options=list(autoWidth=TRUE,
+  style="height:30px"), pageLength=5)
+```
+
+The following command generates
+a table restricting attention to records related to asthma.
+
+```{r gett}
+suppressWarnings({
+aind = grep("sthma", ebicat38$DISEASE.TRAIT)
+datatable(as.data.frame(mcols(ebicat38[aind])), options=list(autoWidth=TRUE,
+  style="height:30px", pageLength=5))
+})
+```
+
+## Navigating traits using the EMBL-EBI Experimental Factor Ontology
+
+Field `MAPPED_TRAIT_URI` includes a comma-delimited string with
+URIs referring to an ontology for traits and other factors relevant
+to biological experiments and observations.  The underlying
+ontology is available in the form of an annotated algebraic graph.
+
+```{r lkggg}
+data(efo.obo.g)
+efo.obo.g
+```
+There are over 16000 terms in the ontology.  Terms and term-related
+metadata are manipulated using methods of the `r Biocpkg("graph")`
+package.
+```{r lkgt}
+nodes(efo.obo.g)[1:4] # imported directly from OBO
+names(nodeData(efo.obo.g)[[1]])
+sapply(nodeData(efo.obo.g)[1:4], "[[", "name")
+```
+
+Let's obtain the EFO annotation for SNP `rs347412`.
+```{r lkefo}
+ind = which(ebicat38$SNPS == "rs347412")
+urs = ebicat38$MAPPED_TRAIT_URI[ind]
+urs
+```
+These entries must be converted to match the EFO OBO node
+nomenclature.  We then find the EFO names of the factors annotated
+to this SNP.
+```{r lkefo2}
+nn = uri2node(urs)
+nd = nodeData(efo.obo.g, nn)
+sapply(nd, "[[", "name")
+```
+
+
+
+
+# Appendix: Bioconductor infrastructure supporting genetic data analysis 
+
+## Reference builds of the human genome sequence
 
 The most recent build of the human genomic sequence
 is labeled GRCh38.  Using Bioconductor, we can be very concrete about what this
