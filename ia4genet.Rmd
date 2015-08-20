@@ -26,6 +26,7 @@ suppressPackageStartupMessages({
 library(gwascat)
 library(AnnotationHub)
 library(DT)
+library(SIFT.Hsapiens.dbSNP132)
 })
 ```
 
@@ -144,6 +145,23 @@ e270 = ebicat37[ grep(node2uri("EFO:0000270"), ebicat37$MAPPED_TRAIT_URI) ]
 length(e270)
 table(e270$DISEASE.TRAIT)[1:5]
 ```
+
+## Genomic contexts and interpretations of variants
+
+### Presence in exons
+
+### SIFT scores
+
+```{r lksift}
+rsids = e270$SNPS
+library(SIFT.Hsapiens.dbSNP132)
+subst = c("RSID", "METHOD", "PREDICTION", "SCORE")
+sif = select(SIFT.Hsapiens.dbSNP132, keys=rsids, cols=subst)
+datatable(sif)
+```
+
+# Conclusions
+
 
 # Appendix: Bioconductor infrastructure supporting genetic data analysis 
 
