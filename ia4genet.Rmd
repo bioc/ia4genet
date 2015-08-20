@@ -122,8 +122,28 @@ nd = nodeData(efo.obo.g, nn)
 sapply(nd, "[[", "name")
 ```
 
+The current representation of the ontology is a directed graph
+with links pointing from a term to its semantic parent.  We
+convert to an undirected graph to explore semantic neighborhoods of terms.
+The `adj` method will return the nodes adjacent to a specified node.
+Here we obtain the terms accessible from `respiratory system disease`
+with a single step.
+```{r explsem}
+rsdn = adj(ugraph(efo.obo.g), "EFO:0000684")  # respiratory system disease
+unlist(sapply(nodeData(efo.obo.g, rsdn[[1]]), "[[", "name"))
+```
+The `r Biocpkg("RBGL")` package can be used to deploy diverse graph algorithms
+against this ontology.
 
+Once a node name of interest has been found, `node2uri` can be used
+with code to find
+GWAS hits deemed relevant by the curators.
 
+```{r lkuri}
+e270 = ebicat37[ grep(node2uri("EFO:0000270"), ebicat37$MAPPED_TRAIT_URI) ]
+length(e270)
+table(e270$DISEASE.TRAIT)[1:5]
+```
 
 # Appendix: Bioconductor infrastructure supporting genetic data analysis 
 
