@@ -24,6 +24,8 @@ output:
 ```{r setup,echo=FALSE,results="hide"}
 suppressPackageStartupMessages({
 library(gwascat)
+library(GenomicFiles)
+library(rtracklayer)
 library(AnnotationHub)
 library(DT)
 library(SIFT.Hsapiens.dbSNP132)
@@ -129,18 +131,25 @@ convert to an undirected graph to explore semantic neighborhoods of terms.
 The `adj` method will return the nodes adjacent to a specified node.
 Here we obtain the terms accessible from `respiratory system disease`
 with a single step.
+
 ```{r explsem}
 rsdn = adj(ugraph(efo.obo.g), "EFO:0000684")  # respiratory system disease
 unlist(sapply(nodeData(efo.obo.g, rsdn[[1]]), "[[", "name"))
 ```
+
 The `r Biocpkg("RBGL")` package can be used to deploy diverse graph algorithms
 against this ontology.
 
 Once a node name of interest has been found, `node2uri` can be used
 with code to find
-GWAS hits deemed relevant by the curators.
+GWAS hits deemed relevant by the curators.  We'll work with hg19
+coordinates.
 
 ```{r lkuri}
+data(ebicat37)
+library(GenomeInfoDb)
+seqlevelsStyle(ebicat37) = "UCSC"
+genome(ebicat37) = "hg19"
 e270 = ebicat37[ grep(node2uri("EFO:0000270"), ebicat37$MAPPED_TRAIT_URI) ]
 length(e270)
 table(e270$DISEASE.TRAIT)[1:5]
@@ -150,14 +159,49 @@ table(e270$DISEASE.TRAIT)[1:5]
 
 ### Presence in exons
 
+We can map our GWAS hits to exons using the TxDb infrastructure.
+```{r lkexoh}
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+allex = exons(TxDb.Hsapiens.UCSC.hg19.knownGene)
+subsetByOverlaps( e270, allex )
+```
+
 ### SIFT scores
+
+We query the SIFT resource using dbSNP identifiers.
 
 ```{r lksift}
 rsids = e270$SNPS
 library(SIFT.Hsapiens.dbSNP132)
 subst = c("RSID", "METHOD", "PREDICTION", "SCORE")
 sif = select(SIFT.Hsapiens.dbSNP132, keys=rsids, cols=subst)
-datatable(sif)
+datatable(na.omit(sif))
+```
+
+### ChromImpute segmentation
+
+We'll use adult lung sample from the epigenomics road map
+as stored in the `r Biocpkg("erma")` package.  Other segmentations
+can be retrieved using the `r Biocpkg("AnnotationHub")` package.
+
+```{r lkcimp}
+library(erma)
+ee = makeErmaSet()[,31] # lung
+library(rtracklayer)
+cstates = import(files(ee)[1], which=e270, genome="hg19")
+sort(table(cstates$name), decreasing=TRUE)
+```
+
+### Regions of chromatin modification
+
+We'll check for coincidence of our GWAS hits with peaks identified
+with H3K4me1 marks in fetal lung fibroblasts, using component AH43875
+of the `r Biocpkg("AnnotationHub")`.
+```{r lkh3}
+library(AnnotationHub)
+ah = AnnotationHub()
+h3kf = ah[["AH43875"]]
+subsetByOverlaps(e270, h3kf)
 ```
 
 # Conclusions
