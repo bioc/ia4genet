@@ -162,11 +162,13 @@ table(e270$DISEASE.TRAIT)[1:5]
 # GRASP
 
 GRASP is a much denser catalog requiring a different
-approach to archiving and query resolution.  First
+approach to archiving and query resolution.  Initial
 execution
 of `GRASP2()` will trigger a download of a 5GB
 SQLite database that can then be used with `r CRANpkg("dplyr")`
-programming.  Therefore this document does not evaluate
+programming.  This download will not occur again
+unless the database has been centrally updated.
+This document does not evaluate
 the following chunk, but the output is precomputed and
 left static.
 
@@ -274,8 +276,8 @@ is.
 library(BSgenome.Hsapiens.NCBI.GRCh38)
 class(Hsapiens)
 Hsapiens
-class(Hsapiens$"1")
-Hsapiens$"1"
+class(Hsapiens$"chr17")
+Hsapiens$"chr17"
 ```
 
 ## From dbSNP to GRanges
