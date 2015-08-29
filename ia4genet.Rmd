@@ -23,11 +23,11 @@ output:
 
 ```{r setup,echo=FALSE,results="hide"}
 suppressPackageStartupMessages({
-library(erma)
+library(AnnotationHub)
+ah = AnnotationHub()
 library(gwascat)
 library(GenomicFiles)
 library(rtracklayer)
-library(AnnotationHub)
 library(DT)
 library(SIFT.Hsapiens.dbSNP132)
 library(grasp2db)
@@ -228,17 +228,17 @@ sif = AnnotationDbi::select(SIFT.Hsapiens.dbSNP132, keys=rsids, cols=subst)
 datatable(na.omit(sif))
 ```
 
-## ChromImpute segmentation
+## ChromHmm segmentation
 
-We'll use adult lung sample from the epigenomics road map
-as stored in the `r Biocpkg("erma")` package.  Other segmentations
-can be retrieved using the `r Biocpkg("AnnotationHub")` package.
+We'll use the fetal lung sample from the epigenomics road map
+as provided by `r Biocpkg("AnnotationHub")`.
 
-```{r lkcimp}
-library(erma)
-ee = makeErmaSet()[,31] # lung
-library(rtracklayer)
-cstates = import(files(ee)[1], which=e270, genome="hg19")
+```{r lkchmm, echo=FALSE}
+library(AnnotationHub)
+ah = AnnotationHub()
+lq = query(ah, c("E088", "state"))
+lq
+cstates = subsetByOverlaps( ah[["AH46941"]], e270 )
 sort(table(cstates$name), decreasing=TRUE)
 ```
 
