@@ -231,16 +231,21 @@ datatable(na.omit(sif))
 ## ChromHmm segmentation
 
 We'll use the fetal lung sample from the epigenomics road map
-as provided by `r Biocpkg("AnnotationHub")`.
+as provided by `r Biocpkg("AnnotationHub")`.  We use prior
+knowledge that tag "E088" refers to the fetal lung tissue
+study.
 
-```{r lkchmm, echo=FALSE}
+```{r lkchmm}
 library(AnnotationHub)
 ah = AnnotationHub()
-lq = query(ah, c("E088", "state"))
+lq = AnnotationHub::query(ah, c("E088", "state"))
 lq
 cstates = subsetByOverlaps( ah[["AH46941"]], e270 )
 sort(table(cstates$name), decreasing=TRUE)
 ```
+
+In this way we can label variants according to their tissue-specific
+epigenetic contexts.
 
 ## Regions of chromatin modification
 
