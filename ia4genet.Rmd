@@ -34,6 +34,7 @@ library(grasp2db)
 library(BSgenome)
 library("SNPlocs.Hsapiens.dbSNP144.GRCh37")
 library(BSgenome.Hsapiens.NCBI.GRCh38)
+library(parody)
 })
 ```
 
