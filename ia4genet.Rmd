@@ -1,7 +1,6 @@
 ---
 title: "Integrative annotation for human genetics: Approaches with Bioconductor"
 author: "Vincent J. Carey"
-date: "`r doc_date()`"
 abstract: >
   The study of genetic variation among human individuals
   engenders substantial archives of details on individual genomes.
