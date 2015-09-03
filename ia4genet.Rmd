@@ -32,8 +32,8 @@ library(SIFT.Hsapiens.dbSNP132)
 library(grasp2db)
 library(BSgenome)
 library("SNPlocs.Hsapiens.dbSNP144.GRCh37")
-library(BSgenome.Hsapiens.NCBI.GRCh38)
-library(parody)
+#library(BSgenome.Hsapiens.NCBI.GRCh38)
+library(BSgenome.Hsapiens.UCSC.hg19)
 })
 ```
 
@@ -60,27 +60,27 @@ packages for querying contents of
 the [NCBI dbSNP](http://www.ncbi.nlm.nih.gov/SNP/),
 and tools for obtaining and programming with gene models.
 
-# The gwascat package for the EMBL-EBI GWAS catalog
+# The gwascat package for the EMBL-EBI (formerly NHGRI) GWAS catalog
 
 ## Basic operations, fields, and interactive tabulation 
 
-The EMBL-EBI catalog is presented using GRCh38 coordinates.
+The NHGRI version of the GWAS catalog is presented using hg19( GRCh37) coordinates.
 ```{r lkg}
 library(gwascat)
-data(ebicat38)
-ebicat38
+data(gwrngs19)
+gwrngs19
 ```
 
-While there are `r length(ebicat38)` records, the number of unique loci is
+While there are `r length(gwrngs19)` records, the number of unique loci is
 ```{r lku}
-length(unique(ebicat38$SNPS))
+length(unique(gwrngs19$SNPs))
 ```
 
 A full view of the metadata about each study result is available
 with the commands
 ```{r eval=FALSE}
 library(DT)
-datatable(as.data.frame(mcols(ebicat38)), options=list(autoWidth=TRUE,
+datatable(as.data.frame(mcols(gwrngs19)), options=list(autoWidth=TRUE,
   style="height:30px"), pageLength=5)
 ```
 
@@ -89,11 +89,14 @@ a table restricting attention to records related to asthma.
 
 ```{r gett}
 suppressWarnings({
-aind = grep("sthma", ebicat38$DISEASE.TRAIT)
-datatable(as.data.frame(mcols(ebicat38[aind])), options=list(autoWidth=TRUE,
+aind = grep("sthma", gwrngs19$Disease.Trait)
+easth = gwrngs19[aind]
+datatable(as.data.frame(mcols(easth)), options=list(autoWidth=TRUE,
   style="height:30px", pageLength=5))
 })
 ```
+
+<!--
 
 ## Navigating traits using the EMBL-EBI Experimental Factor Ontology
 
@@ -102,21 +105,21 @@ URIs referring to an ontology for traits and other factors relevant
 to biological experiments and observations.  The underlying
 ontology is available in the form of an annotated algebraic graph.
 
-```{r lkggg}
+```{r lkggg,eval=FALSE}
 data(efo.obo.g)
 efo.obo.g
 ```
 There are over 16000 terms in the ontology.  Terms and term-related
 metadata are manipulated using methods of the `r Biocpkg("graph")`
 package.
-```{r lkgt}
+```{r lkgt,eval=FALSE}
 nodes(efo.obo.g)[1:4] # imported directly from OBO
 names(nodeData(efo.obo.g)[[1]])
 sapply(nodeData(efo.obo.g)[1:4], "[[", "name")
 ```
 
 Let's obtain the EFO annotation for SNP `rs347412`.
-```{r lkefo}
+```{r lkefo,eval=FALSE}
 ind = which(ebicat38$SNPS == "rs347412")
 urs = ebicat38$MAPPED_TRAIT_URI[ind]
 urs
@@ -124,7 +127,7 @@ urs
 These entries must be converted to match the EFO OBO node
 nomenclature.  We then find the EFO names of the factors annotated
 to this SNP.
-```{r lkefo2}
+```{r lkefo2,eval=FALSE}
 nn = uri2node(urs)
 nd = nodeData(efo.obo.g, nn)
 sapply(nd, "[[", "name")
@@ -137,7 +140,7 @@ The `adj` method will return the nodes adjacent to a specified node.
 Here we obtain the terms accessible from `respiratory system disease`
 with a single step.
 
-```{r explsem}
+```{r explsem,eval=FALSE}
 rsdn = adj(ugraph(efo.obo.g), "EFO:0000684")  # respiratory system disease
 unlist(sapply(nodeData(efo.obo.g, rsdn[[1]]), "[[", "name"))
 ```
@@ -150,7 +153,7 @@ with code to find
 GWAS hits deemed relevant by the curators.  We'll work with hg19
 coordinates.
 
-```{r lkuri}
+```{r lkuri,eval=FALSE}
 data(ebicat37)
 library(GenomeInfoDb)
 seqlevelsStyle(ebicat37) = "UCSC"
@@ -159,6 +162,8 @@ e270 = ebicat37[ grep(node2uri("EFO:0000270"), ebicat37$MAPPED_TRAIT_URI) ]
 length(e270)
 table(e270$DISEASE.TRAIT)[1:5]
 ```
+
+-->
 
 # GRASP
 
@@ -213,7 +218,7 @@ We can map our GWAS hits to exons using the TxDb infrastructure.
 ```{r lkexoh}
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 allex = exons(TxDb.Hsapiens.UCSC.hg19.knownGene)
-subsetByOverlaps( e270, allex )
+subsetByOverlaps( easth, allex )
 ```
 
 ## SIFT scores
@@ -221,7 +226,7 @@ subsetByOverlaps( e270, allex )
 We query the SIFT resource using dbSNP identifiers.
 
 ```{r lksift}
-rsids = e270$SNPS
+rsids = easth$SNPs
 library(SIFT.Hsapiens.dbSNP132)
 subst = c("RSID", "METHOD", "PREDICTION", "SCORE")
 sif = AnnotationDbi::select(SIFT.Hsapiens.dbSNP132, keys=rsids, cols=subst)
@@ -240,7 +245,7 @@ library(AnnotationHub)
 ah = AnnotationHub()
 lq = AnnotationHub::query(ah, c("E088", "state"))
 lq
-cstates = subsetByOverlaps( ah[["AH46941"]], e270 )
+cstates = subsetByOverlaps( ah[["AH46941"]], easth )
 sort(table(cstates$name), decreasing=TRUE)
 ```
 
@@ -256,7 +261,7 @@ of the `r Biocpkg("AnnotationHub")`.
 library(AnnotationHub)
 ah = AnnotationHub()
 h3kf = ah[["AH43875"]]
-subsetByOverlaps(e270, h3kf)
+subsetByOverlaps(easth, h3kf)
 ```
 
 # Conclusions
@@ -274,12 +279,18 @@ assay results with findings of genetic epidemiology.
 
 ## Reference builds of the human genome sequence
 
+<!--
 The most recent build of the human genomic sequence
 is labeled GRCh38.  Using Bioconductor, we can be very concrete about what this
 is.
+-->
+The second-to-last
+build of the human genomic sequence
+is labeled hg19.  Using Bioconductor, we can be very concrete about what this
+is.
 
 ```{r lkhg}
-library(BSgenome.Hsapiens.NCBI.GRCh38)
+library(BSgenome.Hsapiens.UCSC.hg19)
 class(Hsapiens)
 Hsapiens
 class(Hsapiens$"chr17")
