@@ -22,6 +22,7 @@ output:
 
 ```{r setup,echo=FALSE,results="hide"}
 suppressPackageStartupMessages({
+library(BiocStyle)
 library(AnnotationHub)
 ah = AnnotationHub()
 library(gwascat)
