@@ -311,7 +311,9 @@ library("SNPlocs.Hsapiens.dbSNP144.GRCh37")
 ls(pos="package:SNPlocs.Hsapiens.dbSNP144.GRCh37")
 ```
 We can retrieve data on a chromosome.  Note the
-peculiar nomenclature for chromosomes.
+peculiar nomenclature for chromosomes used with dbSNP.
+The `seqlevelsStyle` methods of `r Biocpkg("GenomeInfoDb")`
+can be used to manage these nomenclatures systematically.
 ```{r lksn}
 snpsBySeqname(SNPlocs.Hsapiens.dbSNP144.GRCh37, "ch20")
 ```
