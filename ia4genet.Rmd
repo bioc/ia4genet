@@ -69,6 +69,7 @@ The NHGRI version of the GWAS catalog is presented using hg19( GRCh37) coordinat
 ```{r lkg}
 library(gwascat)
 data(gwrngs19)
+length(gwrngs19)
 gwrngs19
 ```
 
