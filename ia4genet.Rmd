@@ -5,7 +5,8 @@ abstract: >
   The study of genetic variation among human individuals
   engenders substantial archives of details on individual genomes.
   Details of genetic variation are interpreted using evolving
-  resources assembled at various scales.  NCBI's dbSNP assembles
+  resources that are assembled at various scales,
+  institutionally and privately.  NCBI's dbSNP assembles
   information on relatively small variants that occur with
   some regularity in human populations.  The EMBL-EBI GWAS catalog
   provides a curated view of replicated studies of genotype-phenotype
