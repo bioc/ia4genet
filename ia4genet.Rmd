@@ -113,7 +113,7 @@ ebicat37
 
 While there are `r length(ebicat37)` records, the number of unique loci is
 ```{r lku}
-length(unique(mcols(ebicat37)$SNP))
+length(unique(mcols(ebicat37)$SNPS))
 ```
 
 A full view of the metadata about each study result is available
@@ -129,7 +129,9 @@ a table restricting attention to records related to asthma.
 
 ```{r gett}
 suppressWarnings({
-aind = grep("sthma", mcols(ebicat37)[["DISEASE/TRAIT"]])
+# for 3.3
+#aind = grep("sthma", mcols(ebicat37)[["DISEASE/TRAIT"]])
+aind = grep("sthma", mcols(ebicat37)[["DISEASE.TRAIT"]])
 easth = ebicat37[aind]
 # use datatable instead of head for interactive table
 head(as.data.frame(mcols(easth)), options=list(autoWidth=TRUE,
