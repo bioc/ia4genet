@@ -131,7 +131,7 @@ a table restricting attention to records related to asthma.
 suppressWarnings({
 # for 3.3
 #aind = grep("sthma", mcols(ebicat37)[["DISEASE/TRAIT"]])
-aind = grep("sthma", mcols(ebicat37)[["DISEASE.TRAIT"]])
+aind = grep("sthma", mcols(ebicat37)[["DISEASE/TRAIT"]])
 easth = ebicat37[aind]
 # use datatable instead of head for interactive table
 head(as.data.frame(mcols(easth)), options=list(autoWidth=TRUE,
