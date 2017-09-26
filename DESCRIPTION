@@ -35,4 +35,4 @@ VignetteBuilder: knitr
 biocViews: SNP, GeneticVariability
 Suggests: knitr, rmarkdown
 NeedsCompilation: no
-URL:  
+URL: https://www.bioconductor.org/help/workflows/ 
