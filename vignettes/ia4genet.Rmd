@@ -21,7 +21,12 @@ output:
   BiocStyle::html_document
 ---
 
-```{r setup,echo=FALSE,results="hide"}
+```{r eval=TRUE}
+library("ia4genet")
+```
+
+
+```{r setup, eval=FALSE}
 suppressPackageStartupMessages({
 library(BiocStyle)
 library(AnnotationHub)
@@ -80,7 +85,7 @@ projects and employ varied vocabularies.
 The most basic, unified gene annotation resource provided at present is the
 `r Biocannopkg("Homo.sapiens")` package.
 
-```{r lkho}
+```{r lkho, eval=FALSE}
 library(Homo.sapiens)
 Homo.sapiens
 ```
@@ -105,7 +110,6 @@ AnnotationDbi::select(Homo.sapiens, keytype="SYMBOL", keys="BRCA2", columns="TXC
 
 The NHGRI version of the GWAS catalog is presented using hg19 (GRCh37) coordinates.
 ```{r lkg}
-library(gwascat)
 data(ebicat37)
 length(ebicat37)
 ebicat37
@@ -261,7 +265,6 @@ Variables not shown: SNPidInPaper (chr), LocationWithinPaper (chr), Pvalue
 
 We can map our GWAS hits to exons using the TxDb infrastructure.
 ```{r lkexoh}
-library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 allex = exons(TxDb.Hsapiens.UCSC.hg19.knownGene)
 genome(allex) = "GRCh37"
 subsetByOverlaps( easth, allex )
@@ -273,7 +276,6 @@ We query the SIFT resource using dbSNP identifiers.
 
 ```{r lksift}
 rsids = mcols(easth)$SNPS
-library(SIFT.Hsapiens.dbSNP132)
 subst = c("RSID", "METHOD", "PREDICTION", "SCORE")
 sif = AnnotationDbi::select(SIFT.Hsapiens.dbSNP132, keys=rsids, cols=subst)
 #datatable(na.omit(sif))
@@ -288,7 +290,6 @@ knowledge that tag "E088" refers to the fetal lung tissue
 study.
 
 ```{r lkchmm}
-library(AnnotationHub)
 ah = AnnotationHub()
 lq = AnnotationHub::query(ah, c("E088", "state"))
 lq
@@ -307,7 +308,6 @@ We'll check for coincidence of our GWAS hits with peaks identified
 with H3K4me1 marks in fetal lung fibroblasts, using component AH43875
 of the `r Biocpkg("AnnotationHub")`.
 ```{r lkh3}
-library(AnnotationHub)
 ah = AnnotationHub()
 h3kf = ah[["AH43875"]]
 genome(h3kf) = "GRCh37"
@@ -340,7 +340,6 @@ is labeled hg19.  Using Bioconductor, we can be very concrete about what this
 is.
 
 ```{r lkhg}
-library(BSgenome.Hsapiens.UCSC.hg19)
 class(Hsapiens)
 Hsapiens
 class(Hsapiens$"chr17")
@@ -351,12 +350,10 @@ Hsapiens$"chr17"
 
 A number of packages represent snapshots of NCBI dbSNP.
 ```{r lkbs}
-library(BSgenome)
 available.SNPs()
 ```
 Functions available for a recent build are:
 ```{r lklk}
-library("SNPlocs.Hsapiens.dbSNP144.GRCh37")
 ls(pos="package:SNPlocs.Hsapiens.dbSNP144.GRCh37")
 ```
 We can retrieve data on a chromosome.  Note the
